@@ -1,19 +1,21 @@
 import { useState } from "react";
-import { useSelector ,useDispatch } from "react-redux";
-import {get_one_todo, get_all_todos} from "./redux/actions/todo"
-
 const App = () => {
 
-  const dispatch = useDispatch()
-  const todos = useSelector(state => state.todo.todo)
+  const [todos, setTodos] = useState([])
   const [todoId, setTodoId] = useState(null)
+  
+
 
   const getTodo = () => {
     if (todoId === null) {
-      dispatch(get_all_todos())
+      fetch(`https://jsonplaceholder.typicode.com/todos`)
+      .then(response => response.json())
+      .then(json => setTodos(json))
     }
     else {
-      dispatch(get_one_todo(todoId))
+      fetch(`https://jsonplaceholder.typicode.com/todos/${todoId}`)
+      .then(response => response.json())
+      .then(json => setTodos([json]))
       setTodoId(null)
     }
   }
@@ -34,9 +36,7 @@ const App = () => {
       </div>
       <div className="row">
         {
-          typeof todos === "string" ?
-          todos
-          :
+          todos &&
           todos.map((item, id) => {
             return (
               <div key={id}>
